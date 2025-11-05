@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"io"
+	"log/slog"
 	"os"
 	"path/filepath"
 	"sort"
@@ -147,7 +148,7 @@ func (s *Supervisor) Update(ctx context.Context, version string) error {
 	}
 
 	if err := s.cleanupOldBackups(3); err != nil {
-		fmt.Fprintf(os.Stderr, "Warning: failed to cleanup old backups: %v\n", err)
+		slog.Warn("failed to cleanup old backups", "error", err)
 	}
 
 	// Kill the current process - systemd will restart it with the new version
@@ -201,7 +202,7 @@ func (s *Supervisor) Rollback() error {
 
 	if err := os.Remove(latestBackup); err != nil {
 		// Log but don't fail the rollback
-		fmt.Fprintf(os.Stderr, "Warning: failed to remove backup symlink %s: %v\n", latestBackup, err)
+		slog.Warn("failed to remove backup symlink", "symlink", latestBackup, "error", err)
 	}
 
 	pid := os.Getpid()
@@ -300,7 +301,7 @@ func (s *Supervisor) cleanupOldBackups(keep int) error {
 		for _, backup := range toRemove {
 			if err := os.Remove(backup); err != nil {
 				// Log but continue
-				fmt.Fprintf(os.Stderr, "Warning: failed to remove old backup %s: %v\n", backup, err)
+				slog.Warn("failed to remove old backup %s: %v\n", backup, err)
 			}
 		}
 	}
