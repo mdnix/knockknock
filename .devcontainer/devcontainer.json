@@ -1,0 +1,23 @@
+{
+  "name": "knockknock",
+  "build": {
+    "dockerfile": "Dockerfile"
+  },
+  "privileged": true,
+  "runArgs": [
+    "--cgroupns=host",
+    "--tmpfs", "/tmp",
+    "--tmpfs", "/run",
+    "--tmpfs", "/run/lock"
+  ],
+  "mounts": [
+    "source=/sys/fs/cgroup,target=/sys/fs/cgroup,type=bind"
+  ],
+  "overrideCommand": false,
+  "customizations": {
+    "vscode": {
+      "extensions": ["golang.go"]
+    }
+  },
+  "forwardPorts": [8080, 5000]
+}
